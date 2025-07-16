@@ -8,9 +8,12 @@ import { Autoplay, Navigation, Pagination } from 'swiper';
 import TopPropertyCard from './TopPropertyCard';
 import { PropertiesInquiry } from '../../types/property/property.input';
 import { Property } from '../../types/property/property';
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { GET_PROPERTIES } from '../../../apollo/user/query';
 import { T } from '../../types/common';
+import { LIKE_TARGET_PROPERTY } from '../../../apollo/user/mutation';
+import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from '../../sweetAlert';
+import { Message } from '../../enums/common.enum';
 
 interface TopPropertiesProps {
 	initialInput: PropertiesInquiry;
@@ -22,6 +25,8 @@ const TopProperties = (props: TopPropertiesProps) => {
 	const [topProperties, setTopProperties] = useState<Property[]>([]);
 
 	/** APOLLO REQUESTS **/
+	const [likeTargetProperty] = useMutation(LIKE_TARGET_PROPERTY);
+
 	const {
 		loading: getPropertiesLoading,
 		data: getPropertiesData,
@@ -36,6 +41,22 @@ const TopProperties = (props: TopPropertiesProps) => {
 		},
 	});
 	/** HANDLERS **/
+
+	const likePropertyHandler = async (user: T, id: string) => {
+		try {
+			if (!id) return;
+			if (!user._id) throw new Error(Message.NOT_AUTHENTICATED);
+			// Execute like
+			await likeTargetProperty({ variables: { input: id } });
+			// Refetch
+			await getPropertiesRefetch({ input: initialInput });
+
+			await sweetTopSmallSuccessAlert('Success', 800);
+		} catch (err: any) {
+			console.log('ERROR, likePropertyHandler', err);
+			sweetMixinErrorAlert(err.message).then();
+		}
+	};
 
 	if (device === 'mobile') {
 		return (
@@ -55,7 +76,7 @@ const TopProperties = (props: TopPropertiesProps) => {
 							{topProperties.map((property: Property) => {
 								return (
 									<SwiperSlide className={'top-property-slide'} key={property?._id}>
-										<TopPropertyCard property={property} />
+										{/* <TopPropertyCard property={property} /> */}
 									</SwiperSlide>
 								);
 							})}
@@ -98,7 +119,7 @@ const TopProperties = (props: TopPropertiesProps) => {
 							{topProperties.map((property: Property) => {
 								return (
 									<SwiperSlide className={'top-property-slide'} key={property?._id}>
-										<TopPropertyCard property={property} />
+										<TopPropertyCard property={property} likePropertyHandler={likePropertyHandler} />
 									</SwiperSlide>
 								);
 							})}
