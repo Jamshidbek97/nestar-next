@@ -28,7 +28,7 @@ const MemberPage: NextPage = () => {
 
 	/** APOLLO REQUESTS **/
 
-	/** LIFECYCLES **/
+	/** LIFECYCLE **/
 	useEffect(() => {
 		if (!router.isReady) return;
 		if (!category) {

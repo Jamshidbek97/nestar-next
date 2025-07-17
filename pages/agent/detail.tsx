@@ -18,7 +18,6 @@ import { Comment } from '../../libs/types/comment/comment';
 import { CommentGroup } from '../../libs/enums/comment.enum';
 import { REACT_APP_API_URL } from '../../libs/config';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { GET_PROPERTY } from '../../apollo/user/query';
 
 export const getStaticProps = async ({ locale }: any) => ({
 	props: {
