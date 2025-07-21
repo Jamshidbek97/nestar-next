@@ -55,7 +55,7 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 					variables: {
 						input: {
 							_id: id,
-							PropertyStatus: 'DELETE',
+							propertyStatus: 'DELETE',
 						},
 					},
 				});
@@ -74,7 +74,7 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 					variables: {
 						input: {
 							_id: id,
-							PropertyStatus: status,
+							propertyStatus: status,
 						},
 					},
 				});
