@@ -5,6 +5,8 @@ import { Pagination, Stack, Typography } from '@mui/material';
 import PropertyCard from '../property/PropertyCard';
 import { Property } from '../../types/property/property';
 import { T } from '../../types/common';
+import { GET_VISITED } from '../../../apollo/user/query';
+import { useQuery } from '@apollo/client';
 
 const RecentlyVisited: NextPage = () => {
 	const device = useDeviceDetect();
@@ -13,6 +15,20 @@ const RecentlyVisited: NextPage = () => {
 	const [searchVisited, setSearchVisited] = useState<T>({ page: 1, limit: 6 });
 
 	/** APOLLO REQUESTS **/
+	const {
+		loading: getVisitedLoading,
+		data: getVisitedData,
+		error: getVisitedError,
+		refetch: getVisitedRefetch,
+	} = useQuery(GET_VISITED, {
+		fetchPolicy: 'network-only',
+		variables: { input: searchVisited },
+		notifyOnNetworkStatusChange: true,
+		onCompleted: (data: T) => {
+			setRecentlyVisited(data?.getVisited?.list);
+			setTotal(data?.getVisited?.metaCounter[0]?.total || 0);
+		},
+	});
 
 	/** HANDLERS **/
 	const paginationHandler = (e: T, value: number) => {
@@ -55,7 +71,7 @@ const RecentlyVisited: NextPage = () => {
 						</Stack>
 						<Stack className="total-result">
 							<Typography>
-								Total {total} recently visited propert{total > 1 ? 'ies' : 'y'}
+								Total {total} recently visited property {total > 1 ? 'ies' : 'y'}
 							</Typography>
 						</Stack>
 					</Stack>
