@@ -7,6 +7,7 @@ import CommunityCard from '../common/CommunityCard';
 import { T } from '../../types/common';
 import { BoardArticle } from '../../types/board-article/board-article';
 import { BoardArticlesInquiry } from '../../types/board-article/board-article.input';
+import { likeTargetBoardArticleHandler } from '../../utils';
 
 const MemberArticles: NextPage = ({ initialInput, ...props }: any) => {
 	const device = useDeviceDetect();
@@ -18,7 +19,7 @@ const MemberArticles: NextPage = ({ initialInput, ...props }: any) => {
 
 	/** APOLLO REQUESTS **/
 
-	/** LIFECYCLES **/
+	/** LIFECYCLE **/
 	useEffect(() => {
 		if (memberId) setSearchFilter({ ...initialInput, search: { memberId: memberId } });
 	}, [memberId]);
@@ -46,7 +47,14 @@ const MemberArticles: NextPage = ({ initialInput, ...props }: any) => {
 						</div>
 					)}
 					{memberBoArticles?.map((boardArticle: BoardArticle) => {
-						return <CommunityCard boardArticle={boardArticle} key={boardArticle?._id} size={'small'} />;
+						return (
+							<CommunityCard
+								likeArticleHandler={likeTargetBoardArticleHandler}
+								boardArticle={boardArticle}
+								key={boardArticle?._id}
+								size={'small'}
+							/>
+						);
 					})}
 				</Stack>
 				{memberBoArticles?.length !== 0 && (
