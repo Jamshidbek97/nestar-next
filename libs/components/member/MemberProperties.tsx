@@ -9,6 +9,7 @@ import { T } from '../../types/common';
 import { useRouter } from 'next/router';
 import { useQuery } from '@apollo/client';
 import { GET_PROPERTIES } from '../../../apollo/user/query';
+import { Direction } from '../../enums/common.enum';
 
 const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 	const device = useDeviceDetect();
@@ -108,6 +109,7 @@ MyProperties.defaultProps = {
 		page: 1,
 		limit: 5,
 		sort: 'createdAt',
+		direction: Direction.DESC,
 		search: {
 			memberId: '',
 		},
