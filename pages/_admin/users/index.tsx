@@ -51,7 +51,7 @@ const AdminUsers: NextPage = ({ initialInquiry, ...props }: any) => {
 		},
 	});
 
-	/** LIFECYCLES **/
+	/** LIFECYCLE **/
 	useEffect(() => {
 		getMembersRefetch({ input: membersInquiry }).then();
 	}, [membersInquiry]);
