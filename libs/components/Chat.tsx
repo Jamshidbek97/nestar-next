@@ -7,6 +7,9 @@ import MarkChatUnreadIcon from '@mui/icons-material/MarkChatUnread';
 import { useRouter } from 'next/router';
 import ScrollableFeed from 'react-scrollable-feed';
 import { RippleBadge } from '../../scss/MaterialTheme/styled';
+import { useReactiveVar } from '@apollo/client';
+import { socketVar, userVar } from '../../apollo/store';
+import { Member } from '../types/member/member';
 
 const NewMessage = (type: any) => {
 	if (type === 'right') {
@@ -32,17 +35,55 @@ const NewMessage = (type: any) => {
 	}
 };
 
+interface MessagePayload {
+	event: string;
+	text: string;
+	memberData: Member;
+}
+
+interface InfoPayload {
+	event: string;
+	totalClients: number;
+	memberData: Member;
+	action: string;
+}
+
 const Chat = () => {
 	const chatContentRef = useRef<HTMLDivElement>(null);
-	const [messagesList, setMessagesList] = useState([]);
+	const [messagesList, setMessagesList] = useState<MessagePayload[]>([]);
 	const [onlineUsers, setOnlineUsers] = useState<number>(0);
 	const textInput = useRef(null);
 	const [message, setMessage] = useState<string>('');
 	const [open, setOpen] = useState(false);
 	const [openButton, setOpenButton] = useState(false);
 	const router = useRouter();
+	const user = useReactiveVar(userVar);
+	const socket = useReactiveVar(socketVar);
 
 	/** LIFECYCLE **/
+	useEffect(() => {
+		socket.onmessage = (msg) => {
+			const data = JSON.parse(msg.data);
+			console.log('Websocket message', data);
+
+			switch (data.event) {
+				case 'info':
+					const newInfo: InfoPayload = data;
+					setOnlineUsers(newInfo.totalClients);
+					break;
+				case 'getMessages':
+					const list: MessagePayload[] = data.list;
+					setMessagesList(list);
+					break;
+				case 'message':
+					const newMessage: MessagePayload = data;
+					messagesList.push(newMessage);
+					setMessagesList([...messagesList]);
+					break;
+			}
+		};
+	}, [socket, messagesList]);
+
 	useEffect(() => {
 		const timeoutId = setTimeout(() => {
 			setOpenButton(true);
